@@ -2,6 +2,8 @@
 //
 
 /********************************************
+* Original work from Biomedical Optics Series
+Steven L. Jacques, Scott A. Prahl 
  *  mc321.c    , in ANSI Standard C programing language
  *
  *  Monte Carlo simulation yielding spherical, cylindrical, and planar
@@ -21,6 +23,9 @@
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
+ *
+ *
+ *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
  **********/
 
 #include <math.h>
