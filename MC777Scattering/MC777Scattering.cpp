@@ -23,16 +23,18 @@ Steven L. Jacques, Scott A. Prahl
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
- *
- *
+ *  Theodore Info: 
+ *  The problem with the code was the fopen function. This function is deprecated
+ *  and has been replace with the fopen_s function whose parameters are as follows
+ *  fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
+ *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
  *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
  **********/
-//#define _CRT_SECURE_NO_WARNINGS
+
 #include <math.h>
 #include <stdio.h>
 #include "pch.h"
 #include <iostream>
-
 #define	PI          3.1415926
 #define	LIGHTSPEED	2.997925E10 /* in vacuo speed of light [cm/s] */
 #define ALIVE       1   		/* if photon not yet terminated */
@@ -261,8 +263,10 @@ int main() {
 
 	/**** SAVE
 	   Convert data to relative fluence rate [cm^-2] and save to file called "mcmin321.out".
-	*****/
-	target = fopen("mc321.out", "w");
+	   Theodore: Here fopen(<filename>, <options>) has been replaced with
+	   fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
+	*****/ 
+    fopen_s(&target, "mc321.out", "w");
 
 	/* print header */
 	fprintf(target, "number of photons = %f\n", Nphotons);
