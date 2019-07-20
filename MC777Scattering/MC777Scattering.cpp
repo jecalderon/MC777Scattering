@@ -32,9 +32,6 @@ Steven L. Jacques, Scott A. Prahl
 #include <stdio.h>
 #include "pch.h"
 #include <iostream>
-
-
-
 #define	PI          3.1415926
 #define	LIGHTSPEED	2.997925E10 /* in vacuo speed of light [cm/s] */
 #define ALIVE       1   		/* if photon not yet terminated */
