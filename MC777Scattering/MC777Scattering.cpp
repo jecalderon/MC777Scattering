@@ -60,44 +60,43 @@ double RandomGen(char Type, long Seed, long *Status);
 int main() {
 
 	/* Propagation parameters */
-			
-	double	x, y, z;    /* photon position */
-	double	ux, uy, uz; /* photon trajectory as cosines */
-	double  uxx, uyy, uzz;	/* temporary values used during SPIN */
-	double	s;          /* step sizes. s = -log(RND)/mus [cm] */
-	double	costheta;   /* cos(theta) */
-	double  sintheta;   /* sin(theta) */
-	double	cospsi;     /* cos(psi) */
-	double  sinpsi;     /* sin(psi) */
-	double	psi;        /* azimuthal angle */
-	double	i_photon;   /* current photon */
-	double	W;          /* photon weight */
-	double	absorb;     /* weighted deposited in a step due to absorption */
-	short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
+	register double	x, y, z;    /* photon position */
+	register double	ux, uy, uz; /* photon trajectory as cosines */
+	register double  uxx, uyy, uzz;	/* temporary values used during SPIN */
+	register double	s;          /* step sizes. s = -log(RND)/mus [cm] */
+	register double	costheta;   /* cos(theta) */
+	register double  sintheta;   /* sin(theta) */
+	register double	cospsi;     /* cos(psi) */
+	register double  sinpsi;     /* sin(psi) */
+	register double	psi;        /* azimuthal angle */
+	register double	i_photon;   /* current photon */
+	register double	W;          /* photon weight */
+	register double	absorb;     /* weighted deposited in a step due to absorption */
+	register short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	double	Csph[1001];  /* spherical   photon concentration CC[ir=0..100] */
-	double	Ccyl[1001];  /* cylindrical photon concentration CC[ir=0..100] */
-	double	Cpla[1001];  /* planar      photon concentration CC[ir=0..100] */
-	double	Fsph;       /* fluence in spherical shell */
-	double	Fcyl;       /* fluence in cylindrical shell */
-	double	Fpla;       /* fluence in planar shell */
-	double	mua;        /* absorption coefficient [cm^-1] */
-	double	mus;        /* scattering coefficient [cm^-1] */
-	double	g;          /* anisotropy [-] */
-	double	albedo;     /* albedo of tissue */
-	double	nt;         /* tissue index of refraction */
-	double	Nphotons;   /* number of photons in simulation */
-	short	NR;         /* number of radial positions */
-	double	radial_size;  /* maximum radial size */
-	double	r;          /* radial position */
-	double  dr;         /* radial bin size */
-	short	ir;         /* index to radial position */
-	double  shellvolume;  /* volume of shell at radial position r */
+	register double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
+	register double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
+	register double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Fsph;       /* fluence in spherical shell */
+	register double	Fcyl;       /* fluence in cylindrical shell */
+	register double	Fpla;       /* fluence in planar shell */
+	register double	mua;        /* absorption coefficient [cm^-1] */
+	register double	mus;        /* scattering coefficient [cm^-1] */
+	register double	g;          /* anisotropy [-] */
+	register double	albedo;     /* albedo of tissue */
+	register double	nt;         /* tissue index of refraction */
+	register double	Nphotons;   /* number of photons in simulation */
+	register short	NR;         /* number of radial positions */
+	register double	radial_size;  /* maximum radial size */
+	register double	r;          /* radial position */
+	register double  dr;         /* radial bin size */
+	register short	ir;         /* index to radial position */
+	register double  shellvolume;  /* volume of shell at radial position r */
 
 	/* dummy variables */
-	double  rnd;        /* assigned random value 0-1 */
-	double	temp;    /* dummy variables */
+	register double  rnd;        /* assigned random value 0-1 */
+	register double	temp;    /* dummy variables */
 	FILE*	target;     /* point to output file */
 
 
@@ -108,12 +107,12 @@ int main() {
 	*****/
 
 	mua = 1.0;     /* cm^-1 */
-	mus = 0.2;  /* cm^-1 */
-	g = 0.090;
+	mus = 0.0;  /* cm^-1 */
+	g = 0.90;
 	nt = 1.33;
-	Nphotons = 100000; /* set number of photons in simulation */
-	radial_size = 5.0;   /* cm, total range over which bins extend */
-	NR = 1000;	 /* set number of bins.  */
+	Nphotons = 100000000; /* set number of photons in simulation */
+	radial_size = 3.0;   /* cm, total range over which bins extend */
+	NR = 100;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
@@ -198,8 +197,6 @@ int main() {
 			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
 
-			/****  Oblate Spheroidal ****/
-
 
 		 /**** SPIN
 			Scatter photon into new trajectory defined by theta and psi.
@@ -258,7 +255,6 @@ int main() {
 
 		} /* end STEP_CHECK_HOP_SPIN */
 		while (photon_status == ALIVE);
-
 		/* If photon dead, then launch new photon. */
 	} /* end RUN */
 	while (i_photon < Nphotons);
@@ -268,8 +264,8 @@ int main() {
 	   Convert data to relative fluence rate [cm^-2] and save to file called "mcmin321.out".
 	   Theodore: Here fopen(<filename>, <options>) has been replaced with
 	   fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
-	*****/ 
-    fopen_s(&target, "mc321.out", "w");
+	*****/
+    fopen_s(&target, "mc321_.out", "w");
 
 	/* print header */
 	fprintf(target, "number of photons = %f\n", Nphotons);
