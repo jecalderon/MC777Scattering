@@ -23,10 +23,11 @@ Steven L. Jacques, Scott A. Prahl
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
- *  Theodore Info: The problem with the code was the fopen function. This function is deprecated
+ *  Theodore Info: 
+ *  The problem with the code was the fopen function. This function is deprecated
  *  and has been replace with the fopen_s function whose parameters are as follows
  *  fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
- *
+ *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
  *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
  **********/
 
