@@ -1,4 +1,4 @@
-# Light Scattering Monte Carlo SImulation in Visual Studio VC++
+# Light Scattering Monte Carlo Simulation in Visual Studio VC++
 Conversion of Jakes code to VS project
 /********************************************
 
