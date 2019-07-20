@@ -27,11 +27,12 @@ Steven L. Jacques, Scott A. Prahl
  *
  *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
  **********/
-
+//#define _CRT_SECURE_NO_WARNINGS
 #include <math.h>
 #include <stdio.h>
 #include "pch.h"
 #include <iostream>
+
 #define	PI          3.1415926
 #define	LIGHTSPEED	2.997925E10 /* in vacuo speed of light [cm/s] */
 #define ALIVE       1   		/* if photon not yet terminated */
