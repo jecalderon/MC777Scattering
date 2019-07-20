@@ -60,6 +60,7 @@ double RandomGen(char Type, long Seed, long *Status);
 int main() {
 
 	/* Propagation parameters */
+			
 	double	x, y, z;    /* photon position */
 	double	ux, uy, uz; /* photon trajectory as cosines */
 	double  uxx, uyy, uzz;	/* temporary values used during SPIN */
@@ -75,9 +76,9 @@ int main() {
 	short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
-	double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
-	double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
+	double	Csph[1001];  /* spherical   photon concentration CC[ir=0..100] */
+	double	Ccyl[1001];  /* cylindrical photon concentration CC[ir=0..100] */
+	double	Cpla[1001];  /* planar      photon concentration CC[ir=0..100] */
 	double	Fsph;       /* fluence in spherical shell */
 	double	Fcyl;       /* fluence in cylindrical shell */
 	double	Fpla;       /* fluence in planar shell */
@@ -107,12 +108,12 @@ int main() {
 	*****/
 
 	mua = 1.0;     /* cm^-1 */
-	mus = 0.0;  /* cm^-1 */
-	g = 0.90;
+	mus = 0.2;  /* cm^-1 */
+	g = 0.090;
 	nt = 1.33;
-	Nphotons = 1000000000; /* set number of photons in simulation */
-	radial_size = 3.0;   /* cm, total range over which bins extend */
-	NR = 100;	 /* set number of bins.  */
+	Nphotons = 100000; /* set number of photons in simulation */
+	radial_size = 5.0;   /* cm, total range over which bins extend */
+	NR = 1000;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
@@ -196,6 +197,8 @@ int main() {
 			ir = (short)(r / dr);           /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
+
+			/****  Oblate Spheroidal ****/
 
 
 		 /**** SPIN
