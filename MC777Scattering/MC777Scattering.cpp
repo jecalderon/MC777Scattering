@@ -23,16 +23,18 @@ Steven L. Jacques, Scott A. Prahl
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
- *
- *
+ *  Theodore Info: 
+ *  The problem with the code was the fopen function. This function is deprecated
+ *  and has been replace with the fopen_s function whose parameters are as follows
+ *  fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
+ *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
  *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
  **********/
-//#define _CRT_SECURE_NO_WARNINGS
+
 #include <math.h>
 #include <stdio.h>
 #include "pch.h"
 #include <iostream>
-
 #define	PI          3.1415926
 #define	LIGHTSPEED	2.997925E10 /* in vacuo speed of light [cm/s] */
 #define ALIVE       1   		/* if photon not yet terminated */
@@ -58,43 +60,43 @@ double RandomGen(char Type, long Seed, long *Status);
 int main() {
 
 	/* Propagation parameters */
-	double	x, y, z;    /* photon position */
-	double	ux, uy, uz; /* photon trajectory as cosines */
-	double  uxx, uyy, uzz;	/* temporary values used during SPIN */
-	double	s;          /* step sizes. s = -log(RND)/mus [cm] */
-	double	costheta;   /* cos(theta) */
-	double  sintheta;   /* sin(theta) */
-	double	cospsi;     /* cos(psi) */
-	double  sinpsi;     /* sin(psi) */
-	double	psi;        /* azimuthal angle */
-	double	i_photon;   /* current photon */
-	double	W;          /* photon weight */
-	double	absorb;     /* weighted deposited in a step due to absorption */
-	short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
+	register double	x, y, z;    /* photon position */
+	register double	ux, uy, uz; /* photon trajectory as cosines */
+	register double  uxx, uyy, uzz;	/* temporary values used during SPIN */
+	register double	s;          /* step sizes. s = -log(RND)/mus [cm] */
+	register double	costheta;   /* cos(theta) */
+	register double  sintheta;   /* sin(theta) */
+	register double	cospsi;     /* cos(psi) */
+	register double  sinpsi;     /* sin(psi) */
+	register double	psi;        /* azimuthal angle */
+	register double	i_photon;   /* current photon */
+	register double	W;          /* photon weight */
+	register double	absorb;     /* weighted deposited in a step due to absorption */
+	register short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
-	double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
-	double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
-	double	Fsph;       /* fluence in spherical shell */
-	double	Fcyl;       /* fluence in cylindrical shell */
-	double	Fpla;       /* fluence in planar shell */
-	double	mua;        /* absorption coefficient [cm^-1] */
-	double	mus;        /* scattering coefficient [cm^-1] */
-	double	g;          /* anisotropy [-] */
-	double	albedo;     /* albedo of tissue */
-	double	nt;         /* tissue index of refraction */
-	double	Nphotons;   /* number of photons in simulation */
-	short	NR;         /* number of radial positions */
-	double	radial_size;  /* maximum radial size */
-	double	r;          /* radial position */
-	double  dr;         /* radial bin size */
-	short	ir;         /* index to radial position */
-	double  shellvolume;  /* volume of shell at radial position r */
+	register double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
+	register double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
+	register double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Fsph;       /* fluence in spherical shell */
+	register double	Fcyl;       /* fluence in cylindrical shell */
+	register double	Fpla;       /* fluence in planar shell */
+	register double	mua;        /* absorption coefficient [cm^-1] */
+	register double	mus;        /* scattering coefficient [cm^-1] */
+	register double	g;          /* anisotropy [-] */
+	register double	albedo;     /* albedo of tissue */
+	register double	nt;         /* tissue index of refraction */
+	register double	Nphotons;   /* number of photons in simulation */
+	register short	NR;         /* number of radial positions */
+	register double	radial_size;  /* maximum radial size */
+	register double	r;          /* radial position */
+	register double  dr;         /* radial bin size */
+	register short	ir;         /* index to radial position */
+	register double  shellvolume;  /* volume of shell at radial position r */
 
 	/* dummy variables */
-	double  rnd;        /* assigned random value 0-1 */
-	double	temp;    /* dummy variables */
+	register double  rnd;        /* assigned random value 0-1 */
+	register double	temp;    /* dummy variables */
 	FILE*	target;     /* point to output file */
 
 
@@ -108,7 +110,7 @@ int main() {
 	mus = 0.0;  /* cm^-1 */
 	g = 0.90;
 	nt = 1.33;
-	Nphotons = 10000; /* set number of photons in simulation */
+	Nphotons = 100000000; /* set number of photons in simulation */
 	radial_size = 3.0;   /* cm, total range over which bins extend */
 	NR = 100;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
@@ -253,7 +255,6 @@ int main() {
 
 		} /* end STEP_CHECK_HOP_SPIN */
 		while (photon_status == ALIVE);
-
 		/* If photon dead, then launch new photon. */
 	} /* end RUN */
 	while (i_photon < Nphotons);
@@ -261,8 +262,10 @@ int main() {
 
 	/**** SAVE
 	   Convert data to relative fluence rate [cm^-2] and save to file called "mcmin321.out".
+	   Theodore: Here fopen(<filename>, <options>) has been replaced with
+	   fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
 	*****/
-	target = fopen("mc321.out", "w");
+    fopen_s(&target, "mc321_.out", "w");
 
 	/* print header */
 	fprintf(target, "number of photons = %f\n", Nphotons);
