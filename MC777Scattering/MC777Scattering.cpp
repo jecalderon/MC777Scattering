@@ -75,9 +75,9 @@ int main() {
 	register short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	register double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
-	register double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
-	register double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Csph[1001];  /* spherical   photon concentration CC[ir=0..100] */
+	register double	Ccyl[1001];  /* cylindrical photon concentration CC[ir=0..100] */
+	register double	Cpla[1001];  /* planar      photon concentration CC[ir=0..100] */
 	register double	Fsph;       /* fluence in spherical shell */
 	register double	Fcyl;       /* fluence in cylindrical shell */
 	register double	Fpla;       /* fluence in planar shell */
@@ -107,12 +107,12 @@ int main() {
 	*****/
 
 	mua = 1.0;     /* cm^-1 */
-	mus = 0.0;  /* cm^-1 */
-	g = 0.90;
+	mus = 0.1;  /* cm^-1 */
+	g = 0.090;
 	nt = 1.33;
 	Nphotons = 100000000; /* set number of photons in simulation */
-	radial_size = 3.0;   /* cm, total range over which bins extend */
-	NR = 100;	 /* set number of bins.  */
+	radial_size = 6.0;   /* cm, total range over which bins extend */
+	NR = 1000;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
