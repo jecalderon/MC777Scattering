@@ -56,6 +56,23 @@ Steven L. Jacques, Scott A. Prahl
 double RandomGen(char Type, long Seed, long *Status);
 /* Random number generator */
 
+inline void SphericalRadial(double x, double y, double z, double &r, double &dr, short &NR, short &ir){
+	r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
+	ir = (short)(r / dr);           /* ir = index to spatial bin */
+	if (ir >= NR) ir = NR;
+}
+
+inline void CylindricalRadial(double x, double y, double &r, double &dr, short &NR, short &ir){
+	r = sqrt(x*x + y * y);          /* current cylindrical radial position */
+	ir = (short)(r / dr);           /* ir = index to spatial bin */
+	if (ir >= NR) ir = NR;        /* last bin is for overflow */
+}
+
+inline void PlanarRadial(double z, double &r, double &dr, short &NR, short &ir){
+	r = fabs(z);                  /* current planar radial position */
+	ir = (short)(r / dr);           /* ir = index to spatial bin */
+	if (ir >= NR) ir = NR;        /* last bin is for overflow */
+}
 
 int main() {
 
@@ -75,9 +92,9 @@ int main() {
 	register short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	register double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
-	register double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
-	register double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Csph[1001];  /* spherical   photon concentration CC[ir=0..100] */
+	register double	Ccyl[1001];  /* cylindrical photon concentration CC[ir=0..100] */
+	register double	Cpla[1001];  /* planar      photon concentration CC[ir=0..100] */
 	register double	Fsph;       /* fluence in spherical shell */
 	register double	Fcyl;       /* fluence in cylindrical shell */
 	register double	Fpla;       /* fluence in planar shell */
@@ -107,12 +124,12 @@ int main() {
 	*****/
 
 	mua = 1.0;     /* cm^-1 */
-	mus = 0.0;  /* cm^-1 */
-	g = 0.90;
+	mus = 0.1;  /* cm^-1 */
+	g = 0.090;
 	nt = 1.33;
 	Nphotons = 100000000; /* set number of photons in simulation */
-	radial_size = 3.0;   /* cm, total range over which bins extend */
-	NR = 100;	 /* set number of bins.  */
+	radial_size = 6.0;   /* cm, total range over which bins extend */
+	NR = 1000;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
@@ -180,21 +197,15 @@ int main() {
 			W -= absorb;                  /* decrement WEIGHT by amount absorbed */
 
 			/* spherical */
-			r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
-			if (ir >= NR) ir = NR;        /* last bin is for overflow */
+			SphericalRadial(x, y, z, r, dr, NR, ir);
 			Csph[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* cylindrical */
-			r = sqrt(x*x + y * y);          /* current cylindrical radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
-			if (ir >= NR) ir = NR;        /* last bin is for overflow */
+			CylindricalRadial(x, y, r, dr, NR, ir);
 			Ccyl[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* planar */
-			r = fabs(z);                  /* current planar radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
-			if (ir >= NR) ir = NR;        /* last bin is for overflow */
+			PlanarRadial(z, r, dr, NR, ir);
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
 
 
