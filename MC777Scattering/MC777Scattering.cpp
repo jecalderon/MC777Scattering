@@ -60,24 +60,24 @@ double RandomGen(char Type, long Seed, long *Status);
 int main() {
 
 	/* Propagation parameters */
-	register double	x, y, z;    /* photon position */
-	register double	ux, uy, uz; /* photon trajectory as cosines */
-	register double  uxx, uyy, uzz;	/* temporary values used during SPIN */
-	register double	s;          /* step sizes. s = -log(RND)/mus [cm] */
-	register double	costheta;   /* cos(theta) */
-	register double  sintheta;   /* sin(theta) */
-	register double	cospsi;     /* cos(psi) */
-	register double  sinpsi;     /* sin(psi) */
-	register double	psi;        /* azimuthal angle */
-	register double	i_photon;   /* current photon */
-	register double	W;          /* photon weight */
-	register double	absorb;     /* weighted deposited in a step due to absorption */
-	register short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
+	register double		x, y, z;    /* photon position */
+	register double		ux, uy, uz; /* photon trajectory as cosines */
+	register double		uxx, uyy, uzz;	/* temporary values used during SPIN */
+	register double		s;          /* step sizes. s = -log(RND)/mus [cm] */
+	register double		costheta;   /* cos(theta) */
+	register double		sintheta;   /* sin(theta) */
+	register double		cospsi;     /* cos(psi) */
+	register double		sinpsi;     /* sin(psi) */
+	register double		psi;        /* azimuthal angle */
+	register double		i_photon;   /* current photon */
+	register double		W;          /* photon weight */
+	register double		absorb;     /* weighted deposited in a step due to absorption */
+	register short		photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	register double	Csph[1001];  /* spherical   photon concentration CC[ir=0..100] */
-	register double	Ccyl[1001];  /* cylindrical photon concentration CC[ir=0..100] */
-	register double	Cpla[1001];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Csph[10001];  /* spherical   photon concentration CC[ir=0..100] */
+	register double	Ccyl[10001];  /* cylindrical photon concentration CC[ir=0..100] */
+	register double	Cpla[10001];  /* planar      photon concentration CC[ir=0..100] */
 	register double	Fsph;       /* fluence in spherical shell */
 	register double	Fcyl;       /* fluence in cylindrical shell */
 	register double	Fpla;       /* fluence in planar shell */
@@ -90,7 +90,7 @@ int main() {
 	register short	NR;         /* number of radial positions */
 	register double	radial_size;  /* maximum radial size */
 	register double	r;          /* radial position */
-	register double  dr;         /* radial bin size */
+	register double dr;         /* radial bin size */
 	register short	ir;         /* index to radial position */
 	register double  shellvolume;  /* volume of shell at radial position r */
 
@@ -110,9 +110,9 @@ int main() {
 	mus = 0.1;  /* cm^-1 */
 	g = 0.090;
 	nt = 1.33;
-	Nphotons = 100000000; /* set number of photons in simulation */
+	Nphotons = 10000000; /* set number of photons in simulation */
 	radial_size = 6.0;   /* cm, total range over which bins extend */
-	NR = 1000;	 /* set number of bins.  */
+	NR = 10000;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
