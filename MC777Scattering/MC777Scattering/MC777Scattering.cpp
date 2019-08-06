@@ -23,12 +23,15 @@ Steven L. Jacques, Scott A. Prahl
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
- *  Theodore Info: 
+ *
+ *  Update for Visual Studio 2017 Info:
+ *
+ *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
+ *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
  *  The problem with the code was the fopen function. This function is deprecated
  *  and has been replace with the fopen_s function whose parameters are as follows
  *  fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
- *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
- *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
+
  **********/
 
 #include <math.h>
@@ -40,7 +43,7 @@ Steven L. Jacques, Scott A. Prahl
 #define ALIVE       1   		/* if photon not yet terminated */
 #define DEAD        0    		/* if photon is to be terminated */
 #define THRESHOLD   0.01		/* used in roulette */
-#define CHANCE      0.1  		/* used in roulette */
+constexpr auto CHANCE = 0.1  		/* used in roulette */;
 #define COS90D      1.0E-6
  /* If cos(theta) <= COS90D, theta >= PI/2 - 1e-6 rad. */
 #define ONE_MINUS_COSZERO 1.0E-12
@@ -78,9 +81,11 @@ int main() {
 	double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
 	double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
 	double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
+	double	Cobl[101];  /* Spheroida   photon concentration CC[ir=0..100] */
 	double	Fsph;       /* fluence in spherical shell */
 	double	Fcyl;       /* fluence in cylindrical shell */
 	double	Fpla;       /* fluence in planar shell */
+	double	Fobl;       /* fluence in oblate spheroidal shell */
 	double	mua;        /* absorption coefficient [cm^-1] */
 	double	mus;        /* scattering coefficient [cm^-1] */
 	double	g;          /* anisotropy [-] */
@@ -108,7 +113,7 @@ int main() {
 
 	mua = 1.0;     /* cm^-1 */
 	mus = 0.0;  /* cm^-1 */
-	g = 0.90;
+	g = 0.05;    /* The origina nummber is 0.9 */
 	nt = 1.33;
 	Nphotons = 10000; /* set number of photons in simulation */
 	radial_size = 3.0;   /* cm, total range over which bins extend */
@@ -126,6 +131,7 @@ int main() {
 		Csph[ir] = 0;
 		Ccyl[ir] = 0;
 		Cpla[ir] = 0;
+		Cobl[ir] = 0;
 	}
 
 	/**** RUN
@@ -193,9 +199,15 @@ int main() {
 
 			/* planar */
 			r = fabs(z);                  /* current planar radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
+			ir = (short)(r / dr);         /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
+
+			/* Oblate Spheroidal  */
+			r = sqrt(x*x + y * y/sqrt(2) + z * z);  /* current spheroidal radial position */
+			ir = (short)(r / dr);           /* ir = index to spatial bin */
+			if (ir >= NR) ir = NR;			/* last bin is for overflow */
+			Cobl[ir] += absorb;				/* DROP absorbed weight into bin */
 
 
 		 /**** SPIN
@@ -274,7 +286,7 @@ int main() {
 	fprintf(target, "last row is overflow. Ignore.\n");
 
 	/* print column titles */
-	fprintf(target, "r [cm] \t Fsph [1/cm2] \t Fcyl [1/cm2] \t Fpla [1/cm2]\n");
+	fprintf(target, "r [cm] \t Fsph [1/cm2] \t Fcyl [1/cm2] \t Fpla [1/cm2] \t Fobl [1/cm2]\n");
 
 	/* print data:  radial position, fluence rates for 3D, 2D, 1D geometries */
 	for (ir = 0; ir <= NR; ir++) {
@@ -286,7 +298,9 @@ int main() {
 		Fcyl = Ccyl[ir] / Nphotons / shellvolume / mua;
 		shellvolume = dr;            /* per cm2 area of plane */
 		Fpla = Cpla[ir] / Nphotons / shellvolume / mua;
-		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla);
+		shellvolume = 2.0*(1+sqrt(2))*PI*r*r*dr;   /* per cm2 radius of SPheroid shell */
+		Fobl = Cobl[ir] / Nphotons / shellvolume / mua;
+		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla, Fobl);
 	}
 
 	fclose(target);
