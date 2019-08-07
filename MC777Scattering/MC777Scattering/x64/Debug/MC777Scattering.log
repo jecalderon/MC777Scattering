@@ -1,1 +1,12 @@
-﻿
+﻿  pch.cpp
+  MC777Scattering.cpp
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C2065: 'clock_t': undeclared identifier
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C2146: syntax error: missing ';' before identifier 'tStart'
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C2065: 'tStart': undeclared identifier
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C3861: 'clock': identifier not found
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(313): error C3861: 'clock': identifier not found
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(313): error C2065: 'tStart': undeclared identifier
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(313): error C2065: 'CLOCKS_PER_SEC': undeclared identifier
+c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(313): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(313): note: placeholders and their parameters expect 1 variadic arguments, but 0 were provided
+  c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(313): note: the missing variadic argument 1 is required by format string '%.2f'

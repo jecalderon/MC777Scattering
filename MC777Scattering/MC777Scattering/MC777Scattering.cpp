@@ -120,7 +120,7 @@ int main() {
 	mus = 060.0;  /* cm^-1 */
 	g = 0.84400;    /* The origina nummber is 0.9 */
 	nt = 1.33;
-	Nphotons = 10000; /* set number of photons in simulation */
+	Nphotons = 10000000000; /* set number of photons in simulation */
 	radial_size = 5.0;  /* cm, total range over which bins extend */
 	NR = Nbins;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
