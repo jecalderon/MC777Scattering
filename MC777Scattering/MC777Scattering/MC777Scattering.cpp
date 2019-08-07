@@ -36,8 +36,12 @@ Steven L. Jacques, Scott A. Prahl
 
 #include <math.h>
 #include <stdio.h>
+#include <time.h>
 #include "pch.h"
 #include <iostream>
+
+#define Nbins	500
+#define Nbinsp1	501
 #define	PI          3.1415926
 #define	LIGHTSPEED	2.997925E10 /* in vacuo speed of light [cm/s] */
 #define ALIVE       1   		/* if photon not yet terminated */
@@ -78,10 +82,10 @@ int main() {
 	short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	double	Csph[101];  /* spherical   photon concentration CC[ir=0..100] */
-	double	Ccyl[101];  /* cylindrical photon concentration CC[ir=0..100] */
-	double	Cpla[101];  /* planar      photon concentration CC[ir=0..100] */
-	double	Cobl[101];  /* Spheroida   photon concentration CC[ir=0..100] */
+	double	Csph[Nbinsp1];  /* spherical   photon concentration CC[ir=0..100] */
+	double	Ccyl[Nbinsp1];  /* cylindrical photon concentration CC[ir=0..100] */
+	double	Cpla[Nbinsp1];  /* planar      photon concentration CC[ir=0..100] */
+	double	Cobl[Nbinsp1];  /* Spheroida   photon concentration CC[ir=0..100] */
 	double	Fsph;       /* fluence in spherical shell */
 	double	Fcyl;       /* fluence in cylindrical shell */
 	double	Fpla;       /* fluence in planar shell */
@@ -104,6 +108,7 @@ int main() {
 	double	temp;    /* dummy variables */
 	FILE*	target;     /* point to output file */
 
+	clock_t tStart = clock();    /*  testign a time function  */
 
 	/**** INPUT
 	   Input the optical properties
@@ -111,13 +116,13 @@ int main() {
 	   Input the number of photons
 	*****/
 
-	mua = 1.0;     /* cm^-1 */
-	mus = 0.0;  /* cm^-1 */
-	g = 0.900;    /* The origina nummber is 0.9 */
+	mua = .1;     /* cm^-1 */
+	mus = 060.0;  /* cm^-1 */
+	g = 0.84400;    /* The origina nummber is 0.9 */
 	nt = 1.33;
-	Nphotons = 1000000; /* set number of photons in simulation */
-	radial_size = 6.0;   /* cm, total range over which bins extend */
-	NR = 100;	 /* set number of bins.  */
+	Nphotons = 10000; /* set number of photons in simulation */
+	radial_size = 5.0;  /* cm, total range over which bins extend */
+	NR = Nbins;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
@@ -204,7 +209,7 @@ int main() {
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* Oblate Spheroidal  */
-			r = sqrt(x*x + y * y/sqrt(2.0) + z * z);  /* current spheroidal radial position */
+			r = sqrt(x*x / (1+sqrt(2.0)) - y * y + z * z);  /* current spheroidal radial position */
 			ir = (short)(r / dr);           /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;			/* last bin is for overflow */
 			Cobl[ir] += absorb;				/* DROP absorbed weight into bin */
@@ -305,7 +310,7 @@ int main() {
 
 	fclose(target);
 
-
+	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 } /* end of main */
 
 

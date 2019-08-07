@@ -1,7 +1,7 @@
 % lookmc321.m
 clear
 
-fid = fopen('mc321.out');
+fid = fopen('mc321_.out');
 
 for i=1:5
     s = fgetl(fid);
@@ -17,7 +17,7 @@ Fobl = A(:,5);
 fclose(fid)
 
 
-figure(1);clf
+figure('Name','Fluence  Rates Across Symmetrical Surfaces');clf
 semilogy(nm,Fsph,'ro-','linewidth',2)
 hold on
 semilogy(nm,Fcyl,'gd-','linewidth',2)
@@ -28,4 +28,4 @@ set(gca,'fontsize',18)
 xlabel('Range, r[cm]')
 ylabel('Fluence rate [W/cm^2]')
 legend('F_{sph}','F_{cyl}','F_{pla}','F_{obl}')
-axis([0 3.1 1e-4 1e3])
+axis([0 6 1e-5 1e3])
