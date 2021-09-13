@@ -116,11 +116,11 @@ int main() {
 	   Input the number of photons
 	*****/
 
-	mua = .1;     /* cm^-1 */
-	mus = 060.0;  /* cm^-1 */
+	mua = .31;     /* cm^-1 */
+	mus = 1.0010;  /* cm^-1 */
 	g = 0.84400;    /* The origina nummber is 0.9 */
 	nt = 1.33;
-	Nphotons = 10000; /* set number of photons in simulation */
+	Nphotons = 10000000; /* set number of photons in simulation */
 	radial_size = 5.0;  /* cm, total range over which bins extend */
 	NR = Nbins;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
@@ -211,7 +211,7 @@ int main() {
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* Oblate Spheroidal  */
-			r = sqrt(x*x / (1 + sqrt(2.0)) - y * y + z * z);  /* current spheroidal radial position */
+			r = sqrt(x*x / (1 + sqrt(2.0)) - y * y + z * z);  /* current spheroidal radial position wher focal point equal minor axis */
 			ir = (short)(r / dr);           /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;			/* last bin is for overflow */
 			Cobl[ir] += absorb;				/* DROP absorbed weight into bin */
@@ -304,7 +304,7 @@ int main() {
 		Fcyl = Ccyl[ir] / Nphotons / shellvolume / mua;
 		shellvolume = dr;            /* per cm2 area of plane */
 		Fpla = Cpla[ir] / Nphotons / shellvolume / mua;
-		shellvolume = 2.0*(1 + sqrt(2.0))*PI*r*r*dr; /* per spherical shell */
+		shellvolume = 2.0*(1 + sqrt(2.0))*PI*r*r*dr; /* per spheroidal shell */
 		Fobl = Cobl[ir] / Nphotons / shellvolume / mua;
 		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla, Fobl);
 	}

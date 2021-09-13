@@ -108,7 +108,7 @@ int main() {
 	double	temp;    /* dummy variables */
 	FILE*	target;     /* point to output file */
 
-	clock_t tStart = clock();    /*  testign a time function  */
+	clock_t tStart = clock();    /*  testing a time function  */
 
 	/**** INPUT
 	   Input the optical properties
@@ -311,6 +311,7 @@ int main() {
 	fclose(target);
 
 	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+
 } /* end of main */
 
 

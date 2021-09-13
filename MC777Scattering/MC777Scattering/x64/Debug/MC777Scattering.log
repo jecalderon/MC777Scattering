@@ -1,5 +1,4 @@
-﻿  pch.cpp
-  MC777Scattering.cpp
+﻿  MC777Scattering.cpp
 c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C2065: 'clock_t': undeclared identifier
 c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C2146: syntax error: missing ';' before identifier 'tStart'
 c:\users\jecalderon\source\repos\mc777scattering\mc777scattering\mc777scattering\mc777scattering.cpp(111): error C2065: 'tStart': undeclared identifier
