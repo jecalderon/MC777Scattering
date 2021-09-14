@@ -136,7 +136,7 @@ int main() {
 		Csph[ir] = 0;
 		Ccyl[ir] = 0;
 		Cpla[ir] = 0;
-		Cobl[ir] = 0;  /*  Jose Calderon coordinate Oblate Spheroidal Coordinate */
+		Cobl[ir] = 0;
 	}
 
 	/**** RUN
