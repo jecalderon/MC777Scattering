@@ -191,13 +191,13 @@ int main() {
 			W -= absorb;                  /* decrement WEIGHT by amount absorbed */
 
 			/* spherical */
-			r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
+			r = sqrt(x*x + y*y + z*z);    /* current spherical radial position */
 			ir = (short)(r / dr);           /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Csph[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* cylindrical */
-			r = sqrt(x*x + y * y);          /* current cylindrical radial position */
+			r = sqrt(x*x + y*y);          /* current cylindrical radial position */
 			ir = (short)(r / dr);           /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Ccyl[ir] += absorb;           /* DROP absorbed weight into bin */

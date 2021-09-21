@@ -26,6 +26,6 @@ semilogy(nm,Fobl,'ys-','linewidth',2)
 
 set(gca,'fontsize',18)
 xlabel('Range, r[cm]')
-ylabel('Fluence rate [W/cm^2]')
+ylabel('Fluence rate [1/cm^2]')
 legend('F_{sph}','F_{cyl}','F_{pla}','F_{obl}')
-axis([0 2 1e-5 1e3])
+axis([0 1 1e-5 1e3])
