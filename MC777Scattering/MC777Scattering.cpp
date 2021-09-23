@@ -59,7 +59,7 @@ double RandomGen(char Type, long Seed, long *Status);
 inline void SphericalRadial(double x, double y, double z, double &r, double &dr, short &NR, short &ir){
 	r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
 	ir = (short)(r / dr);           /* ir = index to spatial bin */
-	if (ir >= NR) ir = NR;
+	if (ir >= NR) ir = NR;        /* last bin is for overflow */
 }
 
 inline void CylindricalRadial(double x, double y, double &r, double &dr, short &NR, short &ir){
