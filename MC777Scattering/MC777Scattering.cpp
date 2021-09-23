@@ -40,6 +40,7 @@ Steven L. Jacques, Scott A. Prahl
 #include "pch.h"
 #include <time.h>
 #include <iostream>
+
 #define Nbins	500
 #define Nbinsp1	501
 #define	PI          3.1415926
@@ -56,8 +57,21 @@ Steven L. Jacques, Scott A. Prahl
 #define SIGN(x)           ((x)>=0 ? 1:-1)
 #define InitRandomGen    (double) RandomGen(0, 1, NULL)
 	 /* Initializes the seed for the random number generator. */
+
+
+// --------------------------- THE FIX -------------------------------------------
+#define RandomNum        (double) RandomGen(1, 1, NULL)
+/* Calls for a random number from the randum number generator. */
+
+
+// ---------------------- YOUR MISTAKE -------------------------------------------
+#if 0
 #define RandomNum        (double) RandomGen(0, 1, NULL)
-	 /* Calls for a random number from the randum number generator. */
+/* The mistake was passing '0' as the first parameter in the 'RandomGen' function because if the type is '0' the function will set
+	seed instead of getting a number. To avoid such mistakes in the future it would be nice to use enums if it's ok to use c++ in your code*/
+#endif	 
+	
+//---------------------END OF MY CODE---------------------------------------------
 
 /* DECLARE FUNCTION */
 double RandomGen(char Type, long Seed, long *Status);
@@ -178,6 +192,7 @@ int main() {
 			   ux, uy, uz are cosines of current photon trajectory
 			*****/
 			while ((rnd = RandomNum) <= 0.0);   /* yields 0 < rnd <= 1 */
+			
 			s = -log(rnd) / (mua + mus);          /* Step size.  Note: log() is base e */
 			x += s * ux;                        /* Update positions. */
 			y += s * uy;
@@ -287,6 +302,7 @@ int main() {
     fopen_s(&target, "mc321_.out", "w");
 
 	/* print header */
+
 	fprintf(target, "number of photons = %f\n", Nphotons);
 	fprintf(target, "bin size = %5.5f [cm] \n", dr);
 	fprintf(target, "last row is overflow. Ignore.\n");
@@ -310,10 +326,10 @@ int main() {
 	}
 
 	fclose(target);
-	
+
 	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 	
-
+	//std::cin.get();
 } /* end of main */
 
 
