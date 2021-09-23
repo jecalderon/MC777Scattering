@@ -3,7 +3,7 @@
 
 /********************************************
 * Original work from Biomedical Optics Series
-Steven L. Jacques, Scott A. Prahl 
+Steven L. Jacques, Scott A. Prahl
  *  mc321.c    , in ANSI Standard C programing language
  *
  *  Monte Carlo simulation yielding spherical, cylindrical, and planar
@@ -23,14 +23,14 @@ Steven L. Jacques, Scott A. Prahl
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
- *  Theodore Info 07/2019: 
+ *  Theodore Info 07/2019:
  *  The problem with the code was the fopen function. This function is deprecated
  *  and has been replace with the fopen_s function whose parameters are as follows
  *  fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
  *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
  *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
- *  
- *  There is a problem with the logic. If Absorption coeficient is smaller that 
+ *
+ *  There is a problem with the logic. If Absorption coeficient is smaller that
  *  scattering coeeficient kills the simulation    8/6/2019
  *
  **********/
@@ -40,6 +40,7 @@ Steven L. Jacques, Scott A. Prahl
 #include "pch.h"
 #include <time.h>
 #include <iostream>
+
 #define Nbins	500
 #define Nbinsp1	501
 #define	PI          3.1415926
@@ -56,30 +57,26 @@ Steven L. Jacques, Scott A. Prahl
 #define SIGN(x)           ((x)>=0 ? 1:-1)
 #define InitRandomGen    (double) RandomGen(0, 1, NULL)
 	 /* Initializes the seed for the random number generator. */
-#define RandomNum        (double) RandomGen(0, 1, NULL)
-	 /* Calls for a random number from the randum number generator. */
 
-/* DECLARE FUNCTION */
-double RandomGen(char Type, long Seed, long *Status);
+
+// --------------------------- THE FIX -------------------------------------------
+#define RandomNum        (double) RandomGen(1, 1, NULL)
+/* Calls for a random number from the randum number generator. */
+
+
+// ---------------------- YOUR MISTAKE -------------------------------------------
+#if 0
+#define RandomNum        (double) RandomGen(0, 1, NULL)
+/* The mistake was passing '0' as the first parameter in the 'RandomGen' function because if the type is '0' the function will set
+	seed instead of getting a number. To avoid such mistakes in the future it would be nice to use enums if it's ok to use c++ in your code*/
+#endif	 
+
+	//---------------------END OF MY CODE---------------------------------------------
+
+	/* DECLARE FUNCTION */
+double RandomGen(char Type, long Seed, long* Status);
 /* Random number generator */
 
-inline void SphericalRadial(double x, double y, double z, double &r, double dr, short NR, short &ir){
-	r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
-	ir = (short)(r / dr);           /* ir = index to spatial bin */
-	if (ir >= NR) ir = NR;        /* last bin is for overflow */
-}
-
-inline void CylindricalRadial(double x, double y, double &r, double dr, short NR, short &ir){
-	r = sqrt(x*x + y * y);          /* current cylindrical radial position */
-	ir = (short)(r / dr);           /* ir = index to spatial bin */
-	if (ir >= NR) ir = NR;        /* last bin is for overflow */
-}
-
-inline void PlanarRadial(double z, double &r, double dr, short NR, short &ir){
-	r = fabs(z);                  /* current planar radial position */
-	ir = (short)(r / dr);           /* ir = index to spatial bin */
-	if (ir >= NR) ir = NR;        /* last bin is for overflow */
-}
 
 int main() {
 
@@ -123,7 +120,7 @@ int main() {
 	/* dummy variables */
 	register double  rnd;        /* assigned random value 0-1 */
 	register double	temp;    /* dummy variables */
-	FILE*	target;     /* point to output file */
+	FILE* target;     /* point to output file */
 
 	clock_t tStart = clock();    /*  testing a time function  */
 
@@ -137,7 +134,7 @@ int main() {
 	mus = 312.0;  /* cm^-1 */
 	g = 0.9000;    /* The origina nummber is 0.9 */
 	nt = 1.33;
-	Nphotons = 10000; /* set number of photons in simulation */
+	Nphotons = 200000; /* set number of photons in simulation */
 	radial_size = 2.0;  /* cm, total range over which bins extend */
 	NR = Nbins;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
@@ -175,9 +172,9 @@ int main() {
 		z = 0;
 
 		/* Randomly set photon trajectory to yield an isotropic source. */
-		costheta = 2.0*RandomNum - 1.0;
+		costheta = 2.0 * RandomNum - 1.0;
 		sintheta = sqrt(1.0 - costheta * costheta);	/* sintheta is always positive */
-		psi = 2.0*PI*RandomNum;
+		psi = 2.0 * PI * RandomNum;
 		ux = sintheta * cos(psi);
 		uy = sintheta * sin(psi);
 		uz = costheta;
@@ -195,6 +192,7 @@ int main() {
 			   ux, uy, uz are cosines of current photon trajectory
 			*****/
 			while ((rnd = RandomNum) <= 0.0);   /* yields 0 < rnd <= 1 */
+
 			s = -log(rnd) / (mua + mus);          /* Step size.  Note: log() is base e */
 			x += s * ux;                        /* Update positions. */
 			y += s * uy;
@@ -208,21 +206,27 @@ int main() {
 			W -= absorb;                  /* decrement WEIGHT by amount absorbed */
 
 			/* spherical */
-			SphericalRadial(x, y, z, r, dr, NR, ir);
+			r = sqrt(x * x + y * y + z * z);    /* current spherical radial position */
+			ir = (short)(r / dr);           /* ir = index to spatial bin */
+			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Csph[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* printf("Time taken Spheroida: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);     This time functio test*/
 
 			/* cylindrical */
-			CylindricalRadial(x, y, r, dr, NR, ir);
+			r = sqrt(x * x + y * y);          /* current cylindrical radial position */
+			ir = (short)(r / dr);           /* ir = index to spatial bin */
+			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Ccyl[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* planar */
-			PlanarRadial(z, r, dr, NR, ir);
+			r = fabs(z);                  /* current planar radial position */
+			ir = (short)(r / dr);           /* ir = index to spatial bin */
+			if (ir >= NR) ir = NR;        /* last bin is for overflow */
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* Oblate Spheroidal  */
-			r = sqrt(x*x / (1 + sqrt(2.0)) - y * y + z * z);  /* current spheroidal radial position wher focal point equal minor axis */
+			r = sqrt(x * x / (1 + sqrt(2.0)) - y * y + z * z);  /* current spheroidal radial position wher focal point equal minor axis */
 			ir = (short)(r / dr);           /* ir = index to spatial bin */
 			if (ir >= NR) ir = NR;			/* last bin is for overflow */
 			Cobl[ir] += absorb;				/* DROP absorbed weight into bin */
@@ -237,15 +241,15 @@ int main() {
 		 /* Sample for costheta */
 			rnd = RandomNum;
 			if (g == 0.0)
-				costheta = 2.0*rnd - 1.0;
+				costheta = 2.0 * rnd - 1.0;
 			else {
-				double temp = (1.0 - g * g) / (1.0 - g + 2 * g*rnd);
-				costheta = (1.0 + g * g - temp * temp) / (2.0*g);
+				double temp = (1.0 - g * g) / (1.0 - g + 2 * g * rnd);
+				costheta = (1.0 + g * g - temp * temp) / (2.0 * g);
 			}
 			sintheta = sqrt(1.0 - costheta * costheta); /* sqrt() is faster than sin(). */
 
 			/* Sample psi. */
-			psi = 2.0*PI*RandomNum;
+			psi = 2.0 * PI * RandomNum;
 			cospsi = cos(psi);
 			if (psi < PI)
 				sinpsi = sqrt(1.0 - cospsi * cospsi);     /* sqrt() is faster than sin(). */
@@ -295,9 +299,10 @@ int main() {
 	   Theodore: Here fopen(<filename>, <options>) has been replaced with
 	   fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
 	*****/
-    fopen_s(&target, "mc321_.out", "w");
+	fopen_s(&target, "mc321_.out", "w");
 
 	/* print header */
+
 	fprintf(target, "number of photons = %f\n", Nphotons);
 	fprintf(target, "bin size = %5.5f [cm] \n", dr);
 	fprintf(target, "last row is overflow. Ignore.\n");
@@ -308,23 +313,24 @@ int main() {
 	/* print data:  radial position, fluence rates for 3D, 2D, 1D geometries */
 	for (ir = 0; ir <= NR; ir++) {
 		/* r = sqrt(1.0/3 - (ir+1) + (ir+1)*(ir+1))*dr; */
-		r = (ir + 0.5)*dr;
-		shellvolume = 4.0*PI*r*r*dr; /* per spherical shell */
+		r = (ir + 0.5) * dr;
+		shellvolume = 4.0 * PI * r * r * dr; /* per spherical shell */
 		Fsph = Csph[ir] / Nphotons / shellvolume / mua;
-		shellvolume = 2.0*PI*r*dr;   /* per cm length of cylinder */
+		shellvolume = 2.0 * PI * r * dr;   /* per cm length of cylinder */
 		Fcyl = Ccyl[ir] / Nphotons / shellvolume / mua;
 		shellvolume = dr;            /* per cm2 area of plane */
 		Fpla = Cpla[ir] / Nphotons / shellvolume / mua;
-		shellvolume = 2.0*(1 + sqrt(2.0))*PI*r*r*dr; /* per spheroidal shell */
+		shellvolume = 2.0 * (1 + sqrt(2.0)) * PI * r * r * dr; /* per spheroidal shell */
 		Fobl = Cobl[ir] / Nphotons / shellvolume / mua;
 		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla, Fobl);
 	}
 
+	fprintf(target, "\nIT WORKS!!!");
 	fclose(target);
-	
-	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
-	
 
+	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+
+	//std::cin.get();
 } /* end of main */
 
 
@@ -358,7 +364,7 @@ int main() {
 #define MZ 0
 #define FAC 1.0E-9
 
-double RandomGen(char Type, long Seed, long *Status) {
+double RandomGen(char Type, long Seed, long* Status) {
 	static long i1, i2, ma[56];   /* ma[0] is not used. */
 	long        mj, mk;
 	short       i, ii;
