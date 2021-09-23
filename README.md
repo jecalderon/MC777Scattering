@@ -1,4 +1,4 @@
-# Light Scattering Monte Carlo SImulation in Visual Studio VC++
+# Light Scattering Monte Carlo Simulation in Visual Studio VC++
 Conversion of Jakes code to VS project
 /********************************************
 
@@ -38,6 +38,7 @@ Steven L. Jacques, Scott A. Prahl
 
  *
 
- *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
+ *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017.
+ *Debugged by additional collaborator, Oghenefejiro Theodore Abohweyere of Durham College, Canada. email: oghenefejiro.abohweyere@dcmail.ca, rulecoconuts@gmail.com
 
  **********/

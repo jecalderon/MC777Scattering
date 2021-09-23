@@ -23,18 +23,25 @@ Steven L. Jacques, Scott A. Prahl
  *    biological tissues," Photochem. Photobiol. 67:23-32, 1998.
  *
  *  Trivial fixes to remove warnings SAP, 11/2017
- *  Theodore Info: 
+ *  Theodore Info 07/2019: 
  *  The problem with the code was the fopen function. This function is deprecated
  *  and has been replace with the fopen_s function whose parameters are as follows
  *  fopen_s(<pointer to a file stream e.g FILE* >, <filename>, <options e.g w, r>)
  *  Modified by Abohweyere Oghenefejiro Theodore of Durham College Canada
  *  Modified by Jose E. Calderon University of Puerto Rico for a solution in VS C++ 2017
+ *  
+ *  There is a problem with the logic. If Absorption coeficient is smaller that 
+ *  scattering coeeficient kills the simulation    8/6/2019
+ *
  **********/
 
 #include <math.h>
 #include <stdio.h>
 #include "pch.h"
+#include <time.h>
 #include <iostream>
+#define Nbins	500
+#define Nbinsp1	501
 #define	PI          3.1415926
 #define	LIGHTSPEED	2.997925E10 /* in vacuo speed of light [cm/s] */
 #define ALIVE       1   		/* if photon not yet terminated */
@@ -49,7 +56,7 @@ Steven L. Jacques, Scott A. Prahl
 #define SIGN(x)           ((x)>=0 ? 1:-1)
 #define InitRandomGen    (double) RandomGen(0, 1, NULL)
 	 /* Initializes the seed for the random number generator. */
-#define RandomNum        (double) RandomGen(1, 0, NULL)
+#define RandomNum        (double) RandomGen(0, 1, NULL)
 	 /* Calls for a random number from the randum number generator. */
 
 /* DECLARE FUNCTION */
@@ -77,27 +84,29 @@ inline void PlanarRadial(double z, double &r, double dr, short NR, short &ir){
 int main() {
 
 	/* Propagation parameters */
-	register double	x, y, z;    /* photon position */
-	register double	ux, uy, uz; /* photon trajectory as cosines */
-	register double  uxx, uyy, uzz;	/* temporary values used during SPIN */
-	register double	s;          /* step sizes. s = -log(RND)/mus [cm] */
-	register double	costheta;   /* cos(theta) */
-	register double  sintheta;   /* sin(theta) */
-	register double	cospsi;     /* cos(psi) */
-	register double  sinpsi;     /* sin(psi) */
-	register double	psi;        /* azimuthal angle */
-	register double	i_photon;   /* current photon */
-	register double	W;          /* photon weight */
-	register double	absorb;     /* weighted deposited in a step due to absorption */
-	register short   photon_status;  /* flag = ALIVE=1 or DEAD=0 */
+	register double		x, y, z;    /* photon position */
+	register double		ux, uy, uz; /* photon trajectory as cosines */
+	register double		uxx, uyy, uzz;	/* temporary values used during SPIN */
+	register double		s;          /* step sizes. s = -log(RND)/mus [cm] */
+	register double		costheta;   /* cos(theta) */
+	register double		sintheta;   /* sin(theta) */
+	register double		cospsi;     /* cos(psi) */
+	register double		sinpsi;     /* sin(psi) */
+	register double		psi;        /* azimuthal angle */
+	register double		i_photon;   /* current photon */
+	register double		W;          /* photon weight */
+	register double		absorb;     /* weighted deposited in a step due to absorption */
+	register short		photon_status;  /* flag = ALIVE=1 or DEAD=0 */
 
 	/* other variables */
-	register double	Csph[1001];  /* spherical   photon concentration CC[ir=0..100] */
-	register double	Ccyl[1001];  /* cylindrical photon concentration CC[ir=0..100] */
-	register double	Cpla[1001];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Csph[Nbinsp1];  /* spherical   photon concentration CC[ir=0..100] */
+	register double	Ccyl[Nbinsp1];  /* cylindrical photon concentration CC[ir=0..100] */
+	register double	Cpla[Nbinsp1];  /* planar      photon concentration CC[ir=0..100] */
+	register double	Cobl[Nbinsp1];  /* Oblate      photon concentration CC[ir=0..100] */
 	register double	Fsph;       /* fluence in spherical shell */
 	register double	Fcyl;       /* fluence in cylindrical shell */
 	register double	Fpla;       /* fluence in planar shell */
+	register double	Fobl;       /* fluence in spheroidal shell */
 	register double	mua;        /* absorption coefficient [cm^-1] */
 	register double	mus;        /* scattering coefficient [cm^-1] */
 	register double	g;          /* anisotropy [-] */
@@ -107,7 +116,7 @@ int main() {
 	register short	NR;         /* number of radial positions */
 	register double	radial_size;  /* maximum radial size */
 	register double	r;          /* radial position */
-	register double  dr;         /* radial bin size */
+	register double dr;         /* radial bin size */
 	register short	ir;         /* index to radial position */
 	register double  shellvolume;  /* volume of shell at radial position r */
 
@@ -116,6 +125,7 @@ int main() {
 	register double	temp;    /* dummy variables */
 	FILE*	target;     /* point to output file */
 
+	clock_t tStart = clock();    /*  testing a time function  */
 
 	/**** INPUT
 	   Input the optical properties
@@ -123,13 +133,13 @@ int main() {
 	   Input the number of photons
 	*****/
 
-	mua = 1.0;     /* cm^-1 */
-	mus = 0.1;  /* cm^-1 */
-	g = 0.090;
+	mua = 1.673;     /* cm^-1 */
+	mus = 312.0;  /* cm^-1 */
+	g = 0.9000;    /* The origina nummber is 0.9 */
 	nt = 1.33;
-	Nphotons = 100000000; /* set number of photons in simulation */
-	radial_size = 6.0;   /* cm, total range over which bins extend */
-	NR = 1000;	 /* set number of bins.  */
+	Nphotons = 10000; /* set number of photons in simulation */
+	radial_size = 2.0;  /* cm, total range over which bins extend */
+	NR = Nbins;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
 	dr = radial_size / NR;  /* cm */
 	albedo = mus / (mus + mua);
@@ -143,6 +153,7 @@ int main() {
 		Csph[ir] = 0;
 		Ccyl[ir] = 0;
 		Cpla[ir] = 0;
+		Cobl[ir] = 0;  /*  Jose Calderon coordinate Oblate Spheroidal Coordinate */
 	}
 
 	/**** RUN
@@ -200,6 +211,8 @@ int main() {
 			SphericalRadial(x, y, z, r, dr, NR, ir);
 			Csph[ir] += absorb;           /* DROP absorbed weight into bin */
 
+			/* printf("Time taken Spheroida: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);     This time functio test*/
+
 			/* cylindrical */
 			CylindricalRadial(x, y, r, dr, NR, ir);
 			Ccyl[ir] += absorb;           /* DROP absorbed weight into bin */
@@ -207,6 +220,12 @@ int main() {
 			/* planar */
 			PlanarRadial(z, r, dr, NR, ir);
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
+
+			/* Oblate Spheroidal  */
+			r = sqrt(x*x / (1 + sqrt(2.0)) - y * y + z * z);  /* current spheroidal radial position wher focal point equal minor axis */
+			ir = (short)(r / dr);           /* ir = index to spatial bin */
+			if (ir >= NR) ir = NR;			/* last bin is for overflow */
+			Cobl[ir] += absorb;				/* DROP absorbed weight into bin */
 
 
 		 /**** SPIN
@@ -284,7 +303,7 @@ int main() {
 	fprintf(target, "last row is overflow. Ignore.\n");
 
 	/* print column titles */
-	fprintf(target, "r [cm] \t Fsph [1/cm2] \t Fcyl [1/cm2] \t Fpla [1/cm2]\n");
+	fprintf(target, "r [cm] \t Fsph [1/cm2] \t Fcyl [1/cm2] \t Fpla [1/cm2] \t Fobl [1/cm2]\n");
 
 	/* print data:  radial position, fluence rates for 3D, 2D, 1D geometries */
 	for (ir = 0; ir <= NR; ir++) {
@@ -296,11 +315,15 @@ int main() {
 		Fcyl = Ccyl[ir] / Nphotons / shellvolume / mua;
 		shellvolume = dr;            /* per cm2 area of plane */
 		Fpla = Cpla[ir] / Nphotons / shellvolume / mua;
-		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla);
+		shellvolume = 2.0*(1 + sqrt(2.0))*PI*r*r*dr; /* per spheroidal shell */
+		Fobl = Cobl[ir] / Nphotons / shellvolume / mua;
+		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla, Fobl);
 	}
 
 	fclose(target);
-
+	
+	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	
 
 } /* end of main */
 
