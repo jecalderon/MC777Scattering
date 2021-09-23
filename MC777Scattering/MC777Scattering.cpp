@@ -63,6 +63,23 @@ Steven L. Jacques, Scott A. Prahl
 double RandomGen(char Type, long Seed, long *Status);
 /* Random number generator */
 
+inline void SphericalRadial(double x, double y, double z, double &r, double dr, short NR, short &ir){
+	r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
+	ir = (short)(r / dr);           /* ir = index to spatial bin */
+	if (ir >= NR) ir = NR;        /* last bin is for overflow */
+}
+
+inline void CylindricalRadial(double x, double y, double &r, double dr, short NR, short &ir){
+	r = sqrt(x*x + y * y);          /* current cylindrical radial position */
+	ir = (short)(r / dr);           /* ir = index to spatial bin */
+	if (ir >= NR) ir = NR;        /* last bin is for overflow */
+}
+
+inline void PlanarRadial(double z, double &r, double dr, short NR, short &ir){
+	r = fabs(z);                  /* current planar radial position */
+	ir = (short)(r / dr);           /* ir = index to spatial bin */
+	if (ir >= NR) ir = NR;        /* last bin is for overflow */
+}
 
 int main() {
 
@@ -191,23 +208,17 @@ int main() {
 			W -= absorb;                  /* decrement WEIGHT by amount absorbed */
 
 			/* spherical */
-			r = sqrt(x*x + y * y + z * z);    /* current spherical radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
-			if (ir >= NR) ir = NR;        /* last bin is for overflow */
+			SphericalRadial(x, y, z, r, dr, NR, ir);
 			Csph[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* printf("Time taken Spheroida: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);     This time functio test*/
 
 			/* cylindrical */
-			r = sqrt(x*x + y * y);          /* current cylindrical radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
-			if (ir >= NR) ir = NR;        /* last bin is for overflow */
+			CylindricalRadial(x, y, r, dr, NR, ir);
 			Ccyl[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* planar */
-			r = fabs(z);                  /* current planar radial position */
-			ir = (short)(r / dr);           /* ir = index to spatial bin */
-			if (ir >= NR) ir = NR;        /* last bin is for overflow */
+			PlanarRadial(z, r, dr, NR, ir);
 			Cpla[ir] += absorb;           /* DROP absorbed weight into bin */
 
 			/* Oblate Spheroidal  */
