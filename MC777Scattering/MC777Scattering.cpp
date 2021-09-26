@@ -60,7 +60,7 @@ Steven L. Jacques, Scott A. Prahl
 
 
 // --------------------------- THE FIX -------------------------------------------
-#define RandomNum        (double) RandomGen(1, 1, NULL)
+#define RandomNum        (double) RandomGen(1, 0, NULL)
 /* Calls for a random number from the randum number generator. */
 
 
@@ -134,7 +134,7 @@ int main() {
 	mus = 312.0;  /* cm^-1 */
 	g = 0.9000;    /* The origina nummber is 0.9 */
 	nt = 1.33;
-	Nphotons = 200000; /* set number of photons in simulation */
+	Nphotons = 1000; /* set number of photons in simulation */
 	radial_size = 2.0;  /* cm, total range over which bins extend */
 	NR = Nbins;	 /* set number of bins.  */
 	   /* IF NR IS ALTERED, THEN USER MUST ALSO ALTER THE ARRAY DECLARATION TO A SIZE = NR + 1. */
@@ -290,6 +290,12 @@ int main() {
 		} /* end STEP_CHECK_HOP_SPIN */
 		while (photon_status == ALIVE);
 		/* If photon dead, then launch new photon. */
+
+#ifdef progress
+		printf("\nProgress: %.3f %%", (i_photon / Nphotons) * 100.0);
+		/*This part of the code will only run if you #define progress */
+#endif	
+
 	} /* end RUN */
 	while (i_photon < Nphotons);
 
@@ -325,11 +331,10 @@ int main() {
 		fprintf(target, "%5.5f \t %4.3e \t %4.3e \t %4.3e \t %4.3e \n", r, Fsph, Fcyl, Fpla, Fobl);
 	}
 
-	fprintf(target, "\nIT WORKS!!!");
 	fclose(target);
 
-	printf("Time taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
-
+	printf("\nTime taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	std::cin.get();
 	//std::cin.get();
 } /* end of main */
 
